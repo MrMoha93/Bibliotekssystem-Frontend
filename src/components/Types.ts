@@ -8,9 +8,18 @@ export interface Item {
   title: string;
   type: string;
   author?: string;
-  borrower?: string;
-  borrowDate?: string;
+  isBorrowable: boolean;
+  borrower?: string | null;
+  borrowDate?: string | null;
   category: string;
+}
+
+export interface CreateItemButton {
+  onClick: () => void;
+}
+
+export interface DeleteItemButton {
+  onDelete: () => void;
 }
 
 export interface DeleteCategoryButton {
@@ -21,10 +30,10 @@ export interface EditButton {
   onEdit: () => void;
 }
 
-export interface CreateItemButton {
+export interface LoanItemButton {
   onClick: () => void;
 }
 
-export interface DeleteItemButton {
-  onDelete: () => void;
+export interface ReturnItemButton {
+  onClick: () => void;
 }
