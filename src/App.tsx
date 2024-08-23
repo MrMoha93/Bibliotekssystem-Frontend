@@ -1,24 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import CreateCategory from "./components/CreateCategory";
 import CreateItems from "./components/CreateItems";
 import { Category, Item } from "./components/Types";
+
+const CATEGORIES_API_URL = "http://localhost:5588/api/categories";
+const ITEMS_API_URL = "http://localhost:5588/api/items";
 
 function App() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<Item[]>([]);
 
+  useEffect(() => {
+    const fetchCategoriesAndItems = async () => {
+      try {
+        const [categoriesResponse, itemsResponse] = await Promise.all([
+          axios.get<Category[]>(CATEGORIES_API_URL),
+          axios.get<Item[]>(ITEMS_API_URL),
+        ]);
+
+        setCategories(categoriesResponse.data);
+        setItems(itemsResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchCategoriesAndItems();
+  }, []);
+
   const handleAddCategory = (newCategory: Category) => {
     setCategories([...categories, newCategory]);
   };
 
-  const handleDeleteCategory = (id: string) => {
-    setCategories(categories.filter((category) => category.id !== id));
-    setItems(items.filter((item) => item.category !== id));
-  };
-
-  const handleDeleteAllCategories = () => {
-    setCategories([]);
-    setItems([]); // Töm alla items när kategorierna tas bort
+  const handleDeleteCategory = async (id: string) => {
+    try {
+      await axios.delete(`${CATEGORIES_API_URL}/${id}`);
+      setItems(items.filter((item) => item.categoryId !== id));
+      setCategories(categories.filter((category) => category.id !== id));
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
   };
 
   const handleEditCategory = (id: string, newName: string) => {
@@ -29,12 +51,31 @@ function App() {
     );
   };
 
-  const handleAddItem = (newItem: Item) => {
+  const handleAddItem = async (newItem: Item) => {
     setItems([...items, newItem]);
   };
 
-  const handleDeleteItem = (id: string) => {
-    setItems(items.filter((item) => item.id !== id));
+  const handleDeleteItem = async (id: string) => {
+    try {
+      await axios.delete(`${ITEMS_API_URL}/${id}`);
+      setItems(items.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  };
+
+  const handleUpdateItem = async (updatedItem: Item) => {
+    try {
+      const response = await axios.put(
+        `${ITEMS_API_URL}/${updatedItem.id}`,
+        updatedItem
+      );
+      setItems(
+        items.map((item) => (item.id === updatedItem.id ? response.data : item))
+      );
+    } catch (error) {
+      console.error("Error updating item:", error);
+    }
   };
 
   return (
@@ -45,7 +86,6 @@ function App() {
             categories={categories}
             onAddCategory={handleAddCategory}
             onDeleteCategory={handleDeleteCategory}
-            onDeleteAllCategories={handleDeleteAllCategories}
             onEditCategory={handleEditCategory}
           />
         </div>
@@ -55,6 +95,7 @@ function App() {
             items={items}
             onAddItem={handleAddItem}
             onDeleteItem={handleDeleteItem}
+            onUpdateItem={handleUpdateItem}
           />
         </div>
       </div>

@@ -1,41 +1,65 @@
 import { useState } from "react";
+import axios from "axios";
 import EditButton from "./EditButton";
 import DeleteCategoryButton from "./DeleteCategoryButton";
-import DeleteAllButton from "./DeleteAllButton";
-import { Category } from "./Types";
+import { CreateCategoryProps } from "./Types";
+
+const API_URL = "http://localhost:5588/api/categories";
 
 function CreateCategory({
   categories,
   onAddCategory,
   onDeleteCategory,
-  onDeleteAllCategories,
   onEditCategory,
-}: {
-  categories: Category[];
-  onAddCategory: (category: Category) => void;
-  onDeleteCategory: (id: string) => void;
-  onDeleteAllCategories: () => void;
-  onEditCategory?: (id: string, newName: string) => void; // Gör denna valfri
-}) {
+}: CreateCategoryProps) {
   const [newCategory, setNewCategory] = useState("");
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
     null
   );
   const [editingCategoryName, setEditingCategoryName] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCreateCategory = () => {
-    if (
-      newCategory &&
-      !categories.find(
-        (category) => category.name.toLowerCase() === newCategory.toLowerCase()
-      )
-    ) {
-      const newCat: Category = {
-        id: String(new Date().getTime()), // Använd ett unikt ID baserat på tid
-        name: newCategory,
-      };
-      onAddCategory(newCat);
-      setNewCategory("");
+  const resetForm = () => {
+    setNewCategory("");
+    setError(null);
+  };
+
+  const handleCreateCategory = async () => {
+    if (!newCategory.trim()) return;
+
+    const isDuplicate = categories.some(
+      (category) => category.name.toLowerCase() === newCategory.toLowerCase()
+    );
+    if (isDuplicate) {
+      setError("A category with this name already exists.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(API_URL, { name: newCategory });
+      onAddCategory(response.data);
+      resetForm();
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 400) {
+        setError("A category with this name already exists.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    }
+  };
+
+  const handleEditCategory = async () => {
+    if (!editingCategoryId || !editingCategoryName.trim()) return;
+
+    try {
+      await axios.put(`${API_URL}/${editingCategoryId}`, {
+        name: editingCategoryName,
+      });
+      onEditCategory?.(editingCategoryId, editingCategoryName);
+      setEditingCategoryId(null);
+      setEditingCategoryName("");
+    } catch (error) {
+      console.error("Error editing category:", error);
     }
   };
 
@@ -44,17 +68,11 @@ function CreateCategory({
     setEditingCategoryName(name);
   };
 
-  const handleSaveEdit = () => {
-    if (editingCategoryId && editingCategoryName) {
-      onEditCategory?.(editingCategoryId, editingCategoryName); // Använd valfri anrop
-      setEditingCategoryId(null);
-      setEditingCategoryName("");
-    }
-  };
-
   return (
     <div className="container mt-5">
       <h2>Categories</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
+
       <div className="mb-3">
         <label htmlFor="newCategory" className="form-label">
           Create New Category
@@ -64,18 +82,17 @@ function CreateCategory({
           className="form-control"
           id="newCategory"
           value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
+          onChange={(e) => {
+            setNewCategory(e.target.value);
+            setError(null);
+          }}
           placeholder="Enter category name"
         />
       </div>
-      <div className="d-flex mb-3">
-        <button className="btn btn-primary" onClick={handleCreateCategory}>
-          Create Category
-        </button>
-        {categories.length > 0 && (
-          <DeleteAllButton onDeleteAll={onDeleteAllCategories} />
-        )}
-      </div>
+
+      <button className="btn btn-primary mb-3" onClick={handleCreateCategory}>
+        Create Category
+      </button>
 
       <ul className="list-group">
         {categories.map((category) => (
@@ -92,7 +109,7 @@ function CreateCategory({
                 />
                 <button
                   className="btn btn-sm btn-success ms-2"
-                  onClick={handleSaveEdit}
+                  onClick={handleEditCategory}
                 >
                   Save
                 </button>

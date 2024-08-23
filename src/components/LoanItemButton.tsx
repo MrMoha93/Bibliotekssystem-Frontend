@@ -1,6 +1,6 @@
-import type { LoanItemButton } from "./Types";
+import type { LoanItemButtonProps } from "./Types";
 
-function LoanItemButton({ onClick }: LoanItemButton) {
+function LoanItemButton({ onClick }: LoanItemButtonProps) {
   return (
     <button className="btn btn-sm btn-primary me-2" onClick={onClick}>
       Loan Item

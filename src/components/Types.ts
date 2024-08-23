@@ -3,15 +3,23 @@ export interface Category {
   name: string;
 }
 
+export interface CreateCategoryProps {
+  categories: Category[];
+  onAddCategory: (category: Category) => void;
+  onDeleteCategory: (id: string) => void;
+  onEditCategory?: (id: string, newName: string) => void;
+}
+
 export interface Item {
   id: string;
   title: string;
   type: string;
   author?: string;
+  nbrPages?: number;
   isBorrowable: boolean;
   borrower?: string | null;
   borrowDate?: string | null;
-  category: string;
+  categoryId: string;
 }
 
 export interface CreateItemButton {
@@ -35,5 +43,9 @@ export interface LoanItemButton {
 }
 
 export interface ReturnItemButton {
+  onClick: () => void;
+}
+
+export interface LoanItemButtonProps {
   onClick: () => void;
 }
