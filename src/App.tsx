@@ -3,9 +3,10 @@ import axios from "axios";
 import CreateCategory from "./components/CreateCategory";
 import CreateItems from "./components/CreateItems";
 import { Category, Item } from "./components/Types";
+import { BASE_URL } from "./components/constants";
 
-const CATEGORIES_API_URL = "http://localhost:5588/api/categories";
-const ITEMS_API_URL = "http://localhost:5588/api/items";
+const CATEGORIES_API_URL = `${BASE_URL}/api/categories`;
+const ITEMS_API_URL = `${BASE_URL}/api/items`;
 
 function App() {
   const [categories, setCategories] = useState<Category[]>([]);

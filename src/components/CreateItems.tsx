@@ -6,8 +6,9 @@ import DeleteItemButton from "./DeleteItemButton";
 import LoanItemButton from "./LoanItemButton";
 import ReturnItemButton from "./ReturnItemButton";
 import LoanItemModal from "./LoanItemModal";
+import { BASE_URL } from "./constants";
 
-const ITEMS_API_URL = "http://localhost:5588/api/items";
+const ITEMS_API_URL = `${BASE_URL}/api/items`;
 
 const ITEM_TYPES = {
   BOOK: "BOOK",

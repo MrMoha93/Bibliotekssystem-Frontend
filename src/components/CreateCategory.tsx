@@ -3,8 +3,9 @@ import axios from "axios";
 import EditButton from "./EditButton";
 import DeleteCategoryButton from "./DeleteCategoryButton";
 import { CreateCategoryProps } from "./Types";
+import { BASE_URL } from "./constants";
 
-const API_URL = "http://localhost:5588/api/categories";
+const API_URL = `${BASE_URL}/api/categories`;
 
 function CreateCategory({
   categories,
