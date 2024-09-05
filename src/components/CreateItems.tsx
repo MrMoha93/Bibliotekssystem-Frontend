@@ -176,7 +176,8 @@ function CreateItems({
 
   const getInitials = (title: string) => {
     return title
-      .split(" ")
+      .trim()
+      .split(/\s+/)
       .map((word) => word[0].toUpperCase())
       .join("");
   };
