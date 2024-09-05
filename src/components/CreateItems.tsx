@@ -36,6 +36,7 @@ function CreateItems({
     type: "",
     author: "",
     nbrPages: 0,
+    runTimeMinutes: 0,
     isBorrowable: false,
     borrower: "",
     borrowDate: "",
@@ -86,6 +87,7 @@ function CreateItems({
       type: item.type,
       author: item.author,
       nbrPages: item.nbrPages,
+      runTimeMinutes: item.runTimeMinutes,
       isBorrowable: item.isBorrowable,
       borrower: item.borrower || "",
       borrowDate: item.borrowDate ? item.borrowDate.split("T")[0] : "",
@@ -150,6 +152,7 @@ function CreateItems({
           type: "",
           author: "",
           nbrPages: 0,
+          runTimeMinutes: 0,
           isBorrowable: false,
           borrower: "",
           borrowDate: "",
@@ -174,10 +177,22 @@ function CreateItems({
     }
   };
 
+  const handleRunTimeMinutesChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = parseInt(e.target.value, 10);
+    if (value > 0 || e.target.value === "") {
+      setNewItem({
+        ...newItem,
+        runTimeMinutes: value,
+      });
+    }
+  };
+
   const getInitials = (title: string) => {
     return title
       .trim()
-      .split(/\s+/)
+      .split("/s+/")
       .map((word) => word[0].toUpperCase())
       .join("");
   };
@@ -242,13 +257,24 @@ function CreateItems({
           value={newItem.author || ""}
           onChange={(e) => setNewItem({ ...newItem, author: e.target.value })}
         />
-        <input
-          type="number"
-          className="form-control mt-2"
-          placeholder="Enter number of pages (required for books)"
-          value={newItem.nbrPages || 1}
-          onChange={handleNbrPagesChange}
-        />
+        {newItem.type === ITEM_TYPES.BOOK ||
+        newItem.type === ITEM_TYPES.REFERENCE_BOOK ? (
+          <input
+            type="number"
+            className="form-control mt-2"
+            placeholder="Enter number of pages (required for books)"
+            value={newItem.nbrPages || ""}
+            onChange={handleNbrPagesChange}
+          />
+        ) : (
+          <input
+            type="number"
+            className="form-control mt-2"
+            placeholder="Enter run time in minutes (required for DVDs and audio books)"
+            value={newItem.runTimeMinutes || ""}
+            onChange={handleRunTimeMinutesChange}
+          />
+        )}
         <select
           className="form-select mt-2"
           value={newItem.categoryId}
@@ -262,11 +288,16 @@ function CreateItems({
             </option>
           ))}
         </select>
-        <label className="form-check-label mt-2">
+        <label
+          className={`form-check-label mt-2 ${
+            newItem.type === ITEM_TYPES.REFERENCE_BOOK ? "text-muted" : ""
+          }`}
+        >
           <input
             type="checkbox"
             className="form-check-input"
             checked={newItem.isBorrowable}
+            disabled={newItem.type === ITEM_TYPES.REFERENCE_BOOK}
             onChange={(e) =>
               setNewItem({ ...newItem, isBorrowable: e.target.checked })
             }
@@ -345,7 +376,10 @@ function CreateItems({
                   }
                 />
               ) : (
-                <LoanItemButton onClick={() => handleLoanClick(item)} />
+                <LoanItemButton
+                  onClick={() => handleLoanClick(item)}
+                  disabled={item.type === ITEM_TYPES.REFERENCE_BOOK} // Disable if type is REFERENCE_BOOK
+                />
               )}
               <DeleteItemButton onDelete={() => onDeleteItem(item.id)} />
             </div>
