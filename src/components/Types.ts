@@ -16,6 +16,7 @@ export interface Item {
   type: string;
   author?: string;
   nbrPages?: number;
+  runTimeMinutes?: number;
   isBorrowable: boolean;
   borrower?: string | null;
   borrowDate?: string | null;
@@ -48,4 +49,5 @@ export interface ReturnItemButton {
 
 export interface LoanItemButtonProps {
   onClick: () => void;
+  disabled?: boolean;
 }
