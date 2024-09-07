@@ -48,7 +48,7 @@ function CreateItems({
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [sortBy, setSortBy] = useState<string>(
-    localStorage.getItem("sortBy") || "category"
+    sessionStorage.getItem("sortBy") || "category"
   );
 
   useEffect(() => {
@@ -96,18 +96,36 @@ function CreateItems({
   };
 
   const handleCreateOrUpdateItem = async () => {
-    if (newItem.type === ITEM_TYPES.BOOK) {
-      if (!newItem.title || !newItem.author) {
-        setErrorMessage("Books must have a title and author.");
-        return;
-      }
+    if (!newItem.title || !newItem.author) {
+      setErrorMessage("Title and author are required.");
+      return;
+    }
 
-      if (newItem.isBorrowable && (!newItem.borrowDate || !newItem.borrower)) {
-        setErrorMessage(
-          "Borrowable books must have a borrower and an end date."
-        );
-        return;
-      }
+    if (
+      (newItem.type === ITEM_TYPES.BOOK ||
+        newItem.type === ITEM_TYPES.REFERENCE_BOOK) &&
+      (!newItem.nbrPages || newItem.nbrPages <= 0)
+    ) {
+      setErrorMessage(
+        "Number of pages is required for books and reference books."
+      );
+      return;
+    }
+
+    if (
+      (newItem.type === ITEM_TYPES.DVD ||
+        newItem.type === ITEM_TYPES.AUDIO_BOOK) &&
+      (!newItem.runTimeMinutes || newItem.runTimeMinutes <= 0)
+    ) {
+      setErrorMessage(
+        "Run time in minutes is required for DVDs and audio books."
+      );
+      return;
+    }
+
+    if (newItem.type === ITEM_TYPES.REFERENCE_BOOK && newItem.isBorrowable) {
+      setErrorMessage("Reference books cannot be borrowable.");
+      return;
     }
 
     if (newItem.type === ITEM_TYPES.DVD && !newItem.author) {
@@ -124,6 +142,11 @@ function CreateItems({
       setErrorMessage(
         "Reference Books must have an author and cannot be borrowable."
       );
+      return;
+    }
+
+    if (newItem.isBorrowable && (!newItem.borrowDate || !newItem.borrower)) {
+      setErrorMessage("Borrowable items must have a borrower and an end date.");
       return;
     }
 
@@ -169,30 +192,27 @@ function CreateItems({
 
   const handleNbrPagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
-    if (value > 0 || e.target.value === "") {
-      setNewItem({
-        ...newItem,
-        nbrPages: value,
-      });
-    }
+    setNewItem({
+      ...newItem,
+      nbrPages: isNaN(value) ? 0 : value,
+    });
   };
 
   const handleRunTimeMinutesChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = parseInt(e.target.value, 10);
-    if (value > 0 || e.target.value === "") {
-      setNewItem({
-        ...newItem,
-        runTimeMinutes: value,
-      });
-    }
+    setNewItem({
+      ...newItem,
+      runTimeMinutes: isNaN(value) ? 0 : value,
+    });
   };
 
   const getInitials = (title: string) => {
     return title
       .trim()
-      .split("/s+/")
+      .split(/\s+/)
+      .filter((word) => word.length > 0)
       .map((word) => word[0].toUpperCase())
       .join("");
   };
@@ -378,7 +398,7 @@ function CreateItems({
               ) : (
                 <LoanItemButton
                   onClick={() => handleLoanClick(item)}
-                  disabled={item.type === ITEM_TYPES.REFERENCE_BOOK} // Disable if type is REFERENCE_BOOK
+                  disabled={item.type === ITEM_TYPES.REFERENCE_BOOK}
                 />
               )}
               <DeleteItemButton onDelete={() => onDeleteItem(item.id)} />
