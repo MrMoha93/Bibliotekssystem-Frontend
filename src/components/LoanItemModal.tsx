@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-
-interface LoanItemModalProps {
-  show: boolean;
-  onClose: () => void;
-  onSave: (borrower: string, expireDate: string) => void;
-}
+import { LoanItemModalProps } from "./Types";
 
 function LoanItemModal({ show, onClose, onSave }: LoanItemModalProps) {
   const [borrower, setBorrower] = useState("");

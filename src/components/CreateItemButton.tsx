@@ -1,9 +1,5 @@
 import React from "react";
-
-interface CreateItemButtonProps {
-  onClick: () => void;
-  children: React.ReactNode;
-}
+import type { CreateItemButtonProps } from "./Types";
 
 const CreateItemButton: React.FC<CreateItemButtonProps> = ({
   onClick,

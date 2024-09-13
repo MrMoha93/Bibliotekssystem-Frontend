@@ -1,6 +1,4 @@
-interface DeleteButton {
-  onDelete: () => void;
-}
+import type { DeleteButton } from "./Types";
 
 function DeleteButton({ onDelete }: DeleteButton) {
   return (

@@ -51,3 +51,22 @@ export interface LoanItemButtonProps {
   onClick: () => void;
   disabled?: boolean;
 }
+
+export interface CreateItemButtonProps {
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+export interface DeleteAllButton {
+  onDeleteAll: () => void;
+}
+
+export interface DeleteButton {
+  onDelete: () => void;
+}
+
+export interface LoanItemModalProps {
+  show: boolean;
+  onClose: () => void;
+  onSave: (borrower: string, expireDate: string) => void;
+}
