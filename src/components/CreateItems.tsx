@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Category, Item } from "./Types";
-import CreateItemButton from "../common/CreateItemButton";
-import DeleteItemButton from "../common/DeleteItemButton";
-import LoanItemButton from "../common/LoanItemButton";
-import ReturnItemButton from "../common/ReturnItemButton";
-import LoanItemModal from "../common/LoanItemModal";
+import CreateItemButton from "./common/CreateItemButton";
+import DeleteItemButton from "./common/DeleteItemButton";
+import LoanItemButton from "./common/LoanItemButton";
+import ReturnItemButton from "./common/ReturnItemButton";
+import LoanItemModal from "./common/LoanItemModal";
 import { BASE_URL } from "./constants";
 
 const ITEMS_API_URL = `${BASE_URL}/api/items`;

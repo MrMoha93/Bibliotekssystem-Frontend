@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
-import EditButton from "../common/EditButton";
-import DeleteCategoryButton from "../common/DeleteCategoryButton";
+import EditButton from "./common/EditButton";
+import DeleteCategoryButton from "./common/DeleteCategoryButton";
 import { CreateCategoryProps } from "./Types";
 import { BASE_URL } from "./constants";
 
