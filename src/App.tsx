@@ -1,7 +1,11 @@
-import MainView from "./MainView";
+import { Outlet } from "react-router-dom";
 
 function App() {
-  return <MainView />;
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 }
 
 export default App;
