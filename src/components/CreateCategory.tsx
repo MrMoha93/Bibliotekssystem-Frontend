@@ -122,9 +122,11 @@ function CreateCategory({
                   <EditButton
                     onEdit={() => startEditing(category.id, category.name)}
                   />
-                  <DeleteCategoryButton
-                    onDelete={() => onDeleteCategory(category.id)}
-                  />
+                  <span style={{ marginLeft: "10px" }}>
+                    <DeleteCategoryButton
+                      onDelete={() => onDeleteCategory(category.id)}
+                    />
+                  </span>
                 </div>
               </>
             )}
